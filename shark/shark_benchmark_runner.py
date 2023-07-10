@@ -119,7 +119,7 @@ class SharkBenchmarkRunner(SharkRunner):
         device = "cuda" if torch.cuda.is_available() else "cpu"
         if device == "cuda":
             torch.set_default_device("cuda:0")
-            #if self.enable_tf32:
+            # if self.enable_tf32:
             #    torch.backends.cuda.matmul.allow_tf32 = True
         else:
             torch.set_default_dtype(torch.float32)
