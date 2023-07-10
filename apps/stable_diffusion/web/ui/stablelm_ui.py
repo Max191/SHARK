@@ -132,6 +132,10 @@ with gr.Blocks(title="Chatbot") as stablelm_chat:
         )
         supported_devices = available_devices
         enabled = len(supported_devices) > 0
+        # show cpu-task device first in list for chatbot
+        supported_devices = supported_devices[-1:] + supported_devices[:-1]
+        supported_devices = [x for x in supported_devices if "sync" not in x]
+        print(supported_devices)
         device = gr.Dropdown(
             label="Device",
             value=supported_devices[0]
@@ -151,7 +155,7 @@ with gr.Blocks(title="Chatbot") as stablelm_chat:
             ],
             visible=True,
         )
-    chatbot = gr.Chatbot().style(height=500)
+    chatbot = gr.Chatbot(height=500)
     with gr.Row():
         with gr.Column():
             msg = gr.Textbox(
@@ -159,7 +163,8 @@ with gr.Blocks(title="Chatbot") as stablelm_chat:
                 placeholder="Chat Message Box",
                 show_label=False,
                 interactive=enabled,
-            ).style(container=False)
+                container=False,
+            )
         with gr.Column():
             with gr.Row():
                 submit = gr.Button("Submit", interactive=enabled)

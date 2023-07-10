@@ -32,6 +32,7 @@ from diffusers.pipelines.stable_diffusion.convert_from_ckpt import (
 import requests
 from io import BytesIO
 from omegaconf import OmegaConf
+from cpuinfo import get_cpu_info
 
 
 def get_extended_name(model_name):
@@ -290,7 +291,7 @@ def set_init_device_flags():
         if not args.iree_metal_target_platform:
             triple = get_metal_target_triple(device_name)
             if triple is not None:
-                args.iree_metal_target_platform = triple
+                args.iree_metal_target_platform = triple.split("-")[-1]
         print(
             f"Found device {device_name}. Using target triple "
             f"{args.iree_metal_target_platform}."
@@ -450,8 +451,12 @@ def get_available_devices():
         except:
             print(f"{driver_name} devices are not available.")
         else:
+            cpu_name = get_cpu_info()["brand_raw"]
             for i, device in enumerate(device_list_dict):
-                device_list.append(f"{device['name']} => {driver_name}://{i}")
+                device_name = (
+                    cpu_name if device["name"] == "default" else device["name"]
+                )
+                device_list.append(f"{device_name} => {driver_name}://{i}")
         return device_list
 
     set_iree_runtime_flags()
