@@ -238,23 +238,15 @@ def test_loop(
 
 
 def prepare_artifacts():
-    hf_model_names = model_config_dicts[0].values()
-    gen_base_path = os.path.join(os.getcwd(), "gen_shark_tank")
-    gen_path = os.path.join(gen_base_path, "stable_diffusion")
+    gen_path = os.path.join(os.getcwd(), "gen_shark_tank")
     if not os.path.isdir(gen_path):
-        if not os.path.isdir(gen_base_path):
-            os.mkdir(gen_base_path)
         os.mkdir(gen_path)
-    for modelname in hf_model_names:
-        mlir_path = os.path.join(
-            os.getcwd(), "_".join(modelname.split("/")), "core-input.mlir"
-        )
-        dest_path = os.path.join(
-            gen_path, "_".join(modelname.split("/")) + ".mlir"
-        )
-        if os.path.isfile(mlir_path):
-            shutil.move(mlir_path, dest_path)
-            print(f"Moved {modelname}.mlir to {gen_path}.")
+    for dirname in os.listdir(os.getcwd()):
+        for modelname in ["clip", "unet", "vae"]:
+            if modelname in dirname and "vmfb" not in dirname:
+                if not os.path.isdir(os.path.join(gen_path, dirname)):
+                    shutil.move(os.path.join(os.getcwd(), dirname), gen_path)
+                    print(f"Moved dir: {dirname} to {gen_path}.")
 
 
 parser = argparse.ArgumentParser()
