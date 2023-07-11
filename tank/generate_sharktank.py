@@ -60,31 +60,6 @@ def save_torch_model(torch_model_list, local_tank_cache, import_args):
             print("generating artifacts for: " + torch_model_name)
             model = None
             input = None
-            if model_type == "stable_diffusion":
-                args.use_tuned = False
-                args.import_mlir = True
-                args.local_tank_cache = local_tank_cache
-
-                precision_values = ["fp16"]
-                seq_lengths = [64, 77]
-                for precision_value in precision_values:
-                    args.precision = precision_value
-                    for length in seq_lengths:
-                        model = mw.SharkifyStableDiffusionModel(
-                            model_id=torch_model_name,
-                            custom_weights="",
-                            precision=precision_value,
-                            max_len=length,
-                            width=512,
-                            height=512,
-                            use_base_vae=False,
-                            custom_vae="",
-                            debug=True,
-                            sharktank_dir=local_tank_cache,
-                            generate_vmfb=False,
-                        )
-                        model()
-                continue
             if model_type == "vision":
                 model, input, _ = get_vision_model(
                     torch_model_name, import_args
@@ -404,11 +379,6 @@ if __name__ == "__main__":
         os.path.dirname(__file__), "tflite", "tflite_model_list.csv"
     )
 
-    save_torch_model(
-        os.path.join(os.path.dirname(__file__), "torch_sd_list.csv"),
-        WORKDIR,
-        import_args,
-    )
     save_torch_model(torch_model_csv, WORKDIR, import_args)
     save_tf_model(tf_model_csv, WORKDIR, import_args)
     save_tflite_model(tflite_model_csv, WORKDIR, import_args)
